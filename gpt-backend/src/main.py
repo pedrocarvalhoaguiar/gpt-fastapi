@@ -9,10 +9,14 @@ from src.api import routes
 from src.api.deps import get_redis_client
 from src.core.config import settings
 from src.db.session import add_postgresql_extension
-
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 
+origins = [
+    'http://localhost:3000',
+    'localhost:3000'
+]
 
 tags_metadata = [
     {
@@ -32,6 +36,12 @@ app = FastAPI(
     openapi_url=f"/{settings.VERSION}/openapi.json",
     openapi_tags=tags_metadata,
 )
+
+app.add_middleware(CORSMiddleware,
+                   allow_origins=origins,
+                   allow_credentials=True,
+                   allow_methods=['*'],
+                   allow_headers=['*'])
 
 
 async def on_startup() -> None:

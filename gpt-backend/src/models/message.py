@@ -7,6 +7,7 @@ from src.models.base import BaseModel
 class MessageBase(SQLModel):
     text: str = Field(...)
     type: str = Field(...)
+    chat: int = Field(foreign_key='chat.id')
 
     class Config(BaseConfig):
         json_encoder = {

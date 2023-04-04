@@ -42,22 +42,41 @@ services:
       - base-data:/data
       - ./gpt-backend/:/code
 
-  gpt-nginx:
-    restart: always
+  gpt-frontend:
+    build:
+      context: ./gpt-frontend
+      dockerfile: ./Dockerfile
+      args:
+        env: ${ENV}
     ports:
-      - "0.0.0.0:80:80"
+      - "3000:3000"
+    depends_on:
+      - gpt-backend
     env_file:
       - .env
-    build:
-      context: ./gpt-nginx
-      dockerfile: ./Dockerfile
     volumes:
-        - gpt-nginx-data:/etc/letsencrypt
-
-  redis:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     restart: always
-    image: redis:latest
-    ports:
-      - "6479:6379"
-    volumes:
-      - redis-data:/data
+
+#  gpt-nginx:
+#    restart: always
+#    ports:
+#      - "0.0.0.0:80:80"
+#    env_file:
+#      - .env
+#    build:
+#      context: ./gpt-nginx
+#      dockerfile: ./Dockerfile
+#    volumes:
+#        - gpt-nginx-data:/etc/letsencrypt
+#
+#  redis:
+#    restart: always
+#    image: redis:latest
+#    ports:
+#      - "6479:6379"
+#    volumes:
+#      - redis-data:/data
