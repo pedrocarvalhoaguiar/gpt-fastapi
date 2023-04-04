@@ -1,0 +1,78 @@
+version: '3.4'
+
+x-fastapi-envs: &fastapi_envs
+  environment:
+    - PROJECT_NAME=backend
+    - NGINX_HOST=api-staging.gpt_db.com
+    - ENV=staging
+    - POSTGRES_USER=gpt_db
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_HOST=gpt-database
+    - POSTGRES_DB=gpt_db
+    - POSTGRES_PORT=5432
+    - VERSION=v1
+
+x-default_deploy: &default_deploy
+  deploy:
+    mode: replicated
+    replicas: 1
+    restart_policy:
+      condition: on-failure
+      delay: 20s
+      max_attempts: 6
+      window: 120s
+    update_config:
+      parallelism: 1
+      order: start-first
+
+volumes:
+  data-vol:
+  gpt-databasedata-vol:
+  gpt-nginxdata-vol:
+
+services:
+  gpt-database:
+    image: postgres:15-alpine
+    environment:
+    labels:
+      com.gpt_db.container.name: gpt_db-gpt-database
+      com.gpt_db.env: staging
+      com.gpt_db.project: gpt_db-cloud
+    volumes:
+      - gpt-databasedata-vol:/var/lib/postgresql/data/
+    <<: [*fastapi_envs, *default_deploy]
+
+  gpt-nginx:
+    image: ${REGISTRY}/gpt-nginx:${GITHUB_SHA}
+    environment:
+      - UPSTREAMS=/:gpt-backend:8000
+      - NGINX_SERVER_NAME=api-staging.gpt_db.com # without this, /admin redirects to https://_/
+      - ENABLE_SSL=true
+      - HTTPS_REDIRECT=true
+      - CERTBOT_EMAIL=pedrostrongy@gmail.com
+      - DOMAIN_LIST=api-staging.gpt_db.com
+
+    labels:
+      com.gpt_db.container.name: gpt_db-gpt-nginx
+      com.gpt_db.env: staging
+      com.gpt_db.project: gpt_db-cloud
+    ports:
+      - '0.0.0.0:80:80'
+      - '0.0.0.0:443:443'
+    volumes:
+      - gpt-nginxdata-vol:/etc/letsencrypt
+    <<: *default_deploy
+
+  gpt-backend:
+    image: ${REGISTRY}/gpt-backend:${GITHUB_SHA}
+    environment:
+    labels:
+      com.gpt_db.container.name: gpt_db-gpt-backend
+      com.gpt_db.env: staging
+      com.gpt_db.project: gpt_db-cloud
+    <<: [*fastapi_envs, *default_deploy]
+    volumes:
+      - data-vol:/data
+    command: bash -c "
+      alembic upgrade head &&
+      gunicorn src.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --log-level=info --timeout=120"
