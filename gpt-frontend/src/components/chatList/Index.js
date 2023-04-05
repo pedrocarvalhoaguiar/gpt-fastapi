@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 function ChatList() {
     const [chats, setChats] = useState([]);
@@ -25,7 +26,8 @@ function ChatList() {
             <ul>
                 {chats.map((chat) => (
                     <div key={chat.id} style={{minHeight: '30px'}}>
-                        <a href={`/chats/${chat.ref_id}`} style={{textDecoration: 'none', color: 'white'}}>{chat.id}</a>
+                        <Link to={`chat/${chat.ref_id}`}
+                              style={{textDecoration: 'none', color: 'white'}}>{chat.id}</Link>
                     </div>
                 ))}
             </ul>

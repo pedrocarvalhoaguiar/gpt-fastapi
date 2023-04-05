@@ -44,8 +44,7 @@ async def get_chat_by_ref_id(
         session: AsyncSession = Depends(get_session),
 ) -> IGetResponseBase[IChatRead]:
     chat_repo = ChatRepository(db=session)
-    chat = await chat_repo.get_by_ref_id(ref_id)
-
+    chat = await chat_repo.get(ref_id=ref_id)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 

@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.enums import SortOrder
@@ -12,6 +12,7 @@ from src.schemas.message import IMessageRead, IMessageCreate, MessageBase
 import openai
 from fastapi.responses import JSONResponse
 from fastapi import Body
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -34,6 +35,24 @@ async def messages(
     messages = await message_repo.all(
         skip=skip, limit=limit, sort_field=sort_field, sort_order=sort_order
     )
+
+    return IGetResponseBase[List[IMessageRead]](data=messages)
+
+
+@router.get(
+    "/messages/{chat_id}",
+    response_description="Get a single chat instance by ref_id",
+    response_model=IGetResponseBase[List[IMessageRead]],
+    tags=["messages"],
+)
+async def get_message_by_chat_id(
+        chat_id: int,
+        session: AsyncSession = Depends(get_session),
+) -> IGetResponseBase[List[IMessageRead]]:
+    message_repo = MessageRepository(db=session)
+    messages = await message_repo.f(chat=chat_id)
+    if not messages:
+        raise HTTPException(status_code=404, detail="Messages not found")
 
     return IGetResponseBase[List[IMessageRead]](data=messages)
 

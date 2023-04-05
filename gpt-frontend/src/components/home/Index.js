@@ -1,10 +1,41 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import {useParams} from "react-router-dom";
 
-function GptAnswer() {
+function ChatGPT() {
     const [textInput, setTextInput] = useState('');
     const [answer, setAnswer] = useState('');
     const [question, setQuestion] = useState('')
+    const [chatId, setChatId] = useState(null);
+    const [messages, setMessages] = useState([])
+
+    let params = useParams();
+
+    useEffect(() => {
+        const loadChat = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8666/v1/chats/${params.refId}`);
+                setChatId(response.data.data.id);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        loadChat();
+        const loadMessages = async () => {
+            console.log(1)
+            try {
+                const response = await axios.get(`http://localhost:8666/v1/messages/${chatId}`);
+                setMessages(response.data.id);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        if (chatId) {
+            loadMessages();
+        }
+    });
+
     const handleClick = async () => {
         try {
             const response = await axios.post('http://localhost:8666/v1/gpt-answer', {
@@ -17,10 +48,8 @@ function GptAnswer() {
 
             if (response.status === 200) {
                 setAnswer(response.data.answer);
+                setQuestion(textInput);
 
-                const chatResponse = await axios.post('http://localhost:8666/v1/chats', {});
-                const chatId = chatResponse.data.id;
-                console.log(chatId)
                 await axios.post('http://localhost:8666/v1/messages', {
                     'type': 'input',
                     'text': textInput,
@@ -42,17 +71,18 @@ function GptAnswer() {
 
 
     return (
-        <div style={{width: '70%', display: "flex"}}>
+        <div style={{width: '70%'}}>
+            {question && <div style={{display: "block"}}>Your question: {question}</div>}
+            {answer && <div style={{display: 'block'}}>Answer: {answer}</div>}
             <input
                 type="text"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
             />
-            <button onClick={handleClick}>Submit</button>
-            {question && <div>Your question: {question}</div>}
-            {answer && <div>{answer}</div>}
+            <button onClick={handleClick}>{chatId}</button>
+
         </div>
     );
 }
 
-export default GptAnswer;
+export default ChatGPT;
