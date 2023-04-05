@@ -1,15 +1,13 @@
-FROM node:14-alpine
+FROM node:alpine
 
-WORKDIR /app
+COPY package.json ./
 
-COPY package*.json ./
+COPY package-lock.json ./
 
-RUN npm install
-
-COPY . .
-
-RUN npm run build
+COPY ./ ./
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+RUN npm i
+
+CMD ["npm", "run", "start"]

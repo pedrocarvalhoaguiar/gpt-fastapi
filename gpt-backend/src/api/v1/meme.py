@@ -44,7 +44,6 @@ async def create_meme(
     meme: IMemeCreate,
     session: AsyncSession = Depends(get_session),
 ) -> IMemeRead:
-    print(meme)
     """
     Create a new meme.
     """

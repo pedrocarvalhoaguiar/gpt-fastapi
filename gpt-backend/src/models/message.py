@@ -1,6 +1,6 @@
 from pydantic import BaseConfig
 from sqlmodel import Field, SQLModel
-
+from datetime import datetime, timezone
 from src.models.base import BaseModel
 
 
@@ -18,6 +18,9 @@ class MessageBase(SQLModel):
                 "id": 1,
                 "ref_id": "1234-43143-3134-13423",
                 "created_at": "2004-09-16T23:59:58.75",
+                "text": "O que é um meme?",
+                "type": "input",
+                "chat": 1,
             }
         }
 

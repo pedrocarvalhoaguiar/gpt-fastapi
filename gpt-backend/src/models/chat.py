@@ -1,5 +1,6 @@
 from pydantic import BaseConfig
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import SQLModel
+from datetime import datetime, timezone
 
 from src.models.base import BaseModel
 

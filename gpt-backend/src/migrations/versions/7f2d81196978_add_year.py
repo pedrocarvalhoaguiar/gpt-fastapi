@@ -1,8 +1,8 @@
-"""init
+"""add year
 
-Revision ID: e47d168f9e1e
-Revises: a5ec06af87b7
-Create Date: 2023-04-03 20:22:38.722819
+Revision ID: 7f2d81196978
+Revises: 1287ad5def4f
+Create Date: 2023-04-04 21:14:18.460780
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = 'e47d168f9e1e'
-down_revision = 'a5ec06af87b7'
+revision = '7f2d81196978'
+down_revision = '1287ad5def4f'
 branch_labels = None
 depends_on = None
 

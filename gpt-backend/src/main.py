@@ -14,8 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 logger = logging.getLogger(__name__)
 
 origins = [
-    'http://localhost:3000',
-    'localhost:3000'
+    "*"
 ]
 
 tags_metadata = [
@@ -50,8 +49,6 @@ async def on_startup() -> None:
     FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
     logger.info("FastAPI app running...")
 
-
-app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
 app.add_event_handler("startup", on_startup)
 

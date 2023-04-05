@@ -42,24 +42,24 @@ services:
       - base-data:/data
       - ./gpt-backend/:/code
 
-  gpt-frontend:
-    build:
-      context: ./gpt-frontend
-      dockerfile: ./Dockerfile
-      args:
-        env: ${ENV}
-    ports:
-      - "3000:3000"
-    depends_on:
-      - gpt-backend
-    env_file:
-      - .env
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    restart: always
+#  gpt-frontend:
+#    build:
+#      context: ./gpt-frontend
+#      dockerfile: ./Dockerfile
+#      args:
+#        env: ${ENV}
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - gpt-backend
+#    env_file:
+#      - .env
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
+#    environment:
+#      - NODE_ENV=development
+#    restart: always
 
 #  gpt-nginx:
 #    restart: always

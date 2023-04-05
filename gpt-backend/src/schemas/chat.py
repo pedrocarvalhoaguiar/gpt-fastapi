@@ -9,6 +9,7 @@ class IChatCreate(ChatBase):
 
 class IChatRead(ChatBase):
     ref_id: UUID
+    id: int
 
 
 class IChatUpdate(ChatBase):

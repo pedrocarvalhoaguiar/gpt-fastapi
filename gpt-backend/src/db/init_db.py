@@ -3,6 +3,8 @@ import logging
 
 from src.db.session import SessionLocal
 from src.models.meme import Meme
+from src.models.chat import Chat
+from src.models.message import Message
 
 
 logging.basicConfig(level=logging.INFO)
@@ -30,8 +32,11 @@ async def create_init_data() -> None:
             timestamp=1675473133.0,
         )
 
+        db_obj3 = Chat()
+
         session.add(db_obj1)
         session.add(db_obj2)
+        session.add(db_obj3)
 
         await session.commit()
 

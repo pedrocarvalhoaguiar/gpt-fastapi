@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 from fastapi.responses import PlainTextResponse, Response
 
-from src.api.v1 import health, meme
+from src.api.v1 import health, meme, chat, message
 
 
 home_router = APIRouter()
@@ -16,3 +16,4 @@ api_router = APIRouter()
 api_router.include_router(health.router)
 api_router.include_router(meme.router)
 api_router.include_router(chat.router)
+api_router.include_router(message.router)
